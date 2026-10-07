@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1b2d">
+    <title>AI Tool Finder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('index') }}" class="logo">
+          <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+        <ul class="nav-links">
+            <span class="nav-user">👤 {{ username }}</span>
+
+            <li>
+                <a href="{{ url_for('index') }}" class="active">Home</a>
+            </li>
+            <li>
+                <a href="{{ url_for('search') }}">Search</a>
+            </li>
+            <li>
+                <a href="{{ url_for('category') }}"> Categories</a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}">↩ Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+                {% for cat, msg in messages %}
+                    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <section class="home-hero">
+        <div class="hero-orb one"></div>
+        <div class="hero-orb two"></div>
+
+        <div class="home-hero-grid">
+
+            <div class="hero-copy">
+                <div class="eyebrow">
+                    ✨ {{ total_tools }}+ tools in one place
+                </div>
+
+                <h1>
+                    Find the right <span>AI tool</span> for the work.
+                </h1>
+
+                <p>
+                    Discover tools for coding, writing, design, video,
+                    research and more — without jumping between dozens
+                    of websites.
+                </p>
+
+                <form class="hero-search" method="GET" action="{{ url_for('search') }}">
+                    <input
+                        type="text"
+                        name="query"
+                        placeholder="Search tools, tasks or categories…"
+                        aria-label="Search AI tools"
+                    >
+                    <button type="submit">Search →</button>
+                </form>
+
+                <div class="quick-cats">
+                    <a href="{{ url_for('search') }}">View all →</a>
+                </div>
+            </div>
+
+            <aside class="hero-showcase">
+                <div class="showcase-head">
+                    <div>
+                        <span class="showcase-kicker">TOP TRENDING</span>
+                        <h3>Tools worth exploring</h3>
+                    </div>
+
+                    <!--<span class="showcase-count">
+                        {{ total_tools }}+ indexed
+                    </span>-->
+                </div>
+
+                <div
+                    class="tool-ticker"
+                    aria-label="Automatically scrolling AI tools"
+                >
+                    <div class="tool-ticker-track">
+
+                        {% for tool in recent_tools %}
+                            <a
+                                class="ticker-tool"
+                                href="{{ tool.url }}"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                <span class="ticker-number">
+                                    {{ '%02d' % loop.index }}
+                                </span>
+
+                                <span class="ticker-logo">
+                                    <img
+                                        src="{{ url_for('static', filename='logos/' + (tool.logo or 'default.png')) }}"
+                                        alt="{{ tool.name }} logo"
+                                    >
+                                </span>
+
+                                <span class="ticker-info">
+                                    <strong>{{ tool.name }}</strong>
+                                    <small>{{ tool.category }}</small>
+                                </span>
+
+                                <span class="ticker-price">
+                                    {{ tool.pricing or 'Free' }}
+                                </span>
+
+                                <span class="ticker-arrow">↗</span>
+                            </a>
+                        {% endfor %}
+
+                       
+
+                    </div>
+
+                    
+                </div>
+
+                <div class="showcase-foot">
+                    <span>
+                        <i></i>
+                        Auto-updating discovery feed
+                    </span>
+
+                    <a href="{{ url_for('search') }}">View catalog →</a>
+                </div>
+            </aside>
+
+           <!--  <a href="{{ url_for('search') }}" class="tool-panel-footer">
+                <span>Explore all AI tools</span>
+                <span class="footer-arrow">→</span>
+            </a>-->
+
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="stats-strip">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-num">{{ total_tools }}+</div>
+                <div class="stat-label">AI tools listed</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-num">{{ total_categories }}</div>
+                <div class="stat-label">Categories</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-num">{{ free_count }}</div>
+                <div class="stat-label">Free tools</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-num">24/7</div>
+                <div class="stat-label">Easy discovery</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section">
+        <div class="section-heading">
+            <div>
+                <h2>Explore by category</h2>
+                <p>Start with the type of work you want to improve.</p>
+            </div>
+
+            <a class="section-link" href="{{ url_for('category') }}">
+                All categories →
+            </a>
+        </div>
+
+        <div class="category-mosaic">
+            {% for cat in all_categories %}
+                <a
+                    href="{{ url_for('search', category=cat.category) }}"
+                    class="category-card"
+                    style="--icon-bg: {{ cat.icon_bg }};"
+                >
+                    <span class="cat-index">
+                        {{ '%02d' % loop.index }}
+                    </span>
+
+                    <div>
+                        <div class="tool-icon"><img src="{{ cat.icon }}" alt="{{ cat.category }}"></img></div>
+                        <div class="cat-name">{{ cat.category }}</div>
+                    </div>
+
+                    <span class="cat-count">
+                        {{ cat.tool_count }}
+                        tool{{ 's' if cat.tool_count != 1 else '' }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="home-section" style="padding-top: 0;">
+        <div class="section-heading">
+            <div>
+                <h2>Recently added tools</h2>
+                <p>Quick picks from the latest additions to the catalog.</p>
+            </div>
+
+            <a class="section-link" href="{{ url_for('search') }}">
+                Browse all →
+            </a>
+        </div>
+
+        <div class="tools-grid">
+            {% for tool in recent_tools %}
+                <article class="tool-card">
+
+                    <div class="tool-card-top">
+                        <div class="tool-icon">
+                            <img
+                                class="tool-logo"
+                                src="{{ url_for('static', filename='logos/' + (tool.logo or 'default.png')) }}"
+                                alt="{{ tool.name }} logo"
+                            >
+                        </div>
+
+                        <div>
+                            <div class="tool-name">{{ tool.name }}</div>
+                            <div class="tool-category">{{ tool.category }}</div>
+                        </div>
+                    </div>
+
+                    <p class="tool-desc">
+                        {{ tool.description[:120] }}
+                        {% if tool.description|length > 120 %}…{% endif %}
+                    </p>
+
+                    <div class="tool-footer">
+                        {% if tool.pricing == 'Free' %}
+                            <span class="badge badge-free">Free</span>
+                        {% else %}
+                            <span class="badge badge-paid">
+                                {{ tool.pricing }}
+                            </span>
+                        {% endif %}
+
+                        <a
+                            href="{{ tool.url }}"
+                            target="_blank"
+                            rel="noopener"
+                            class="btn-visit"
+                        >
+                            Visit ↗
+                        </a>
+                    </div>
+
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="home-cta">
+        <div>
+            <h2>Know what you need?</h2>
+            <p>
+                Search the catalog and narrow results by category,
+                pricing and sort order.
+            </p>
+        </div>
+
+        <a href="{{ url_for('search') }}" class="btn btn-primary">
+            Explore tools →
+        </a>
+    </section>
+
+    <footer>
+        <a href="{{ url_for('index') }}" class="logo">
+            <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+      
+
+        <ul class="nav-links">
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('category') }}">Categories</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </footer>
+
+</body>
+</html>

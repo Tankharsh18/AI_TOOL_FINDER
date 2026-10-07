@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1b2d">
+    <title>Login – AI Tool Finder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('login') }}" class="logo">
+            <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>Tool Finder
+        </a>
+
+        <ul class="nav-links">
+            <li>
+                <a href="{{ url_for('register') }}">Create account</a>
+            </li>
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+                {% for cat, msg in messages %}
+                    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="auth-shell">
+
+        <section class="auth-promo">
+            <div class="promo-content">
+
+                <span class="promo-badge">
+                    ✨ AI discovery workspace
+                </span>
+
+                <h1>
+                    Find the right <span>AI tool</span> faster.
+                </h1>
+
+                <p>
+                    Search, compare and discover tools across coding,
+                    writing, design, video, audio, research and more.
+                </p>
+
+                <ul class="promo-list">
+                    <li><b>01</b> Browse organized categories</li>
+                    <li><b>02</b> Filter by Free or Paid tools</li>
+                    <li><b>03</b> Search by task, name or tag</li>
+                    <li><b>04</b> Open the original tool instantly</li>
+                </ul>
+
+            </div>
+        </section>
+
+        <section class="auth-form-wrap">
+            <div class="auth-form">
+
+                <!--<div class="form-logo">
+                    <a
+                        href="{{ url_for('login') }}"
+                        class="logo"
+                        style="color: var(--navy);"
+                    >
+                        <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+                        <span style="color: var(--blue);">AI</span>
+                        &nbsp;Tool Finder
+                    </a>
+                </div>!-->
+
+                <div class="form-title">Welcome back</div>
+
+                <div class="form-sub">
+                    Sign in to continue exploring AI tools.
+                </div>
+
+                {% if error %}
+                    <div class="error-msg">❌ {{ error }}</div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('login') }}">
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            required
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-row">
+                        <label class="remember">
+                            <input type="checkbox" name="remember">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Sign In →
+                    </button>
+
+                </form>
+
+                <div class="form-footer">
+                    Don't have an account?
+                    <a href="{{ url_for('register') }}">Create one</a>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

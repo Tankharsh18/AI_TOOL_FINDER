@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1b2d">
+    <title>Register – AI Tool Finder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('login') }}" class="logo">
+            <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>Tool Finder
+        </a>
+
+        <ul class="nav-links">
+            <li>
+                <a href="{{ url_for('login') }}">Sign in</a>
+            </li>
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+                {% for cat, msg in messages %}
+                    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="auth-shell">
+
+        <section class="auth-promo">
+            <div class="promo-content">
+
+                <span class="promo-badge">🚀 Free to join</span>
+
+                <h1>
+                    Build your personal <span>AI toolkit.</span>
+                </h1>
+
+                <p>
+                    Create an account and keep your discovery workflow
+                    simple — search, filter and jump directly to the
+                    tools you need.
+                </p>
+
+                <ul class="promo-list">
+                    <li><b>01</b> Create your account</li>
+                    <li><b>02</b> Explore the growing catalog</li>
+                    <li><b>03</b> Filter by category and pricing</li>
+                    <li><b>04</b> Open tools directly from the finder</li>
+                </ul>
+
+            </div>
+        </section>
+
+        <section class="auth-form-wrap">
+            <div class="auth-form">
+
+              <!--  <div class="form-logo">
+                    <a
+                        href="{{ url_for('login') }}"
+                        class="logo"
+                        style="color: var(--navy);"
+                    >
+                        <div class="logo-icon">🤖</div>
+                        <span style="color: var(--blue);">AI</span>
+                        &nbsp;Tool Finder
+                    </a>
+                </div>-->
+
+                <div class="form-title">Create an account</div>
+
+                <div class="form-sub">
+                    A simple account to access the AI Tool Finder.
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}">
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Choose a username"
+                            required
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="At least 8 characters"
+                            minlength="8"
+                            required
+                        >
+
+                        <div class="form-hint">
+                            Use a mix of letters, numbers, and symbols.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm password</label>
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            placeholder="Repeat your password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Create Account →
+                    </button>
+
+                </form>
+
+                <div class="form-footer">
+                    Already have an account?
+                    <a href="{{ url_for('login') }}">Sign in</a>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

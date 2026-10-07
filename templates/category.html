@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1b2d">
+    <title>Categories – AI Tool Finder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('index') }}" class="logo">
+            <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+        <ul class="nav-links">
+            <span class="nav-user">👤 {{ username }}</span>
+
+            <li><a href="{{ url_for('index') }}"> Home</a></li>
+            <li><a href="{{ url_for('search') }}"> Search</a></li>
+            <li>
+                <a href="{{ url_for('category') }}" class="active">
+                     Categories
+                </a>
+            </li>
+            <li><a href="{{ url_for('logout') }}">↩ Logout</a></li>
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+                {% for cat, msg in messages %}
+                    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <header class="page-hero">
+        <div class="page-hero-inner">
+            <span class="eyebrow"> Discovery map</span>
+
+            <h1>Browse AI tools by category.</h1>
+
+            <p>
+                {{ categories|length }} categories, organized so you can get
+                from a task to a useful tool faster.
+            </p>
+        </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <main class="page-body">
+
+        <form
+            class="search-row"
+            method="GET"
+            action="{{ url_for('search') }}"
+        >
+            <input
+                type="text"
+                name="query"
+                placeholder="Search across the catalog…"
+            >
+            <button type="submit" class="btn btn-primary">
+                Search →
+            </button>
+        </form>
+
+        {% if categories %}
+
+            <div class="cat-grid">
+                {% for cat in categories %}
+                    <a
+                        href="{{ url_for('search', category=cat.category) }}"
+                        class="cat-card"
+                        style="--icon-bg: {{ cat.icon_bg }};"
+                    >
+                         <div class="tool-icon"><img src="{{ cat.icon }}" alt="{{ cat.category }}"></img></div>
+
+                        <div class="cat-info">
+                            <h3>{{ cat.category }}</h3>
+                        </div>
+
+                        <div class="cat-meta">
+                            <span class="cat-count">
+                                {{ cat.tool_count }}
+                                tool{{ 's' if cat.tool_count != 1 else '' }}
+                            </span>
+
+                            <span class="cat-arrow">→</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+                <div class="empty-icon">🗂</div>
+                <h3>No categories found</h3>
+                <p>
+                    Add some tools to your database and categories will
+                    appear here automatically.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </main>
+
+    <footer>
+        <a href="{{ url_for('index') }}" class="logo">
+             <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+       
+
+        <ul class="nav-links">
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </footer>
+
+</body>
+</html>

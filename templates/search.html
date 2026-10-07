@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f1b2d">
+    <title>Search – AI Tool Finder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="{{ url_for('index') }}" class="logo">
+              <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+        <ul class="nav-links">
+            <span class="nav-user">👤 {{ username }}</span>
+
+            <li><a href="{{ url_for('index') }}"> Home</a></li>
+            <li>
+                <a href="{{ url_for('search') }}" class="active">
+                     Search
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('category') }}"> Categories</a>
+            </li>
+            <li><a href="{{ url_for('logout') }}">↩ Logout</a></li>
+        </ul>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrap">
+                {% for cat, msg in messages %}
+                    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <header class="search-hero">
+        <div class="search-hero-inner">
+            <h1>Search the AI tool catalog.</h1>
+
+            <form
+                class="search-bar"
+                method="GET"
+                action="{{ url_for('search') }}"
+            >
+                <input
+                    type="text"
+                    name="query"
+                    value="{{ query or '' }}"
+                    placeholder="Try coding, image, writing, video…"
+                >
+                <button type="submit">Search →</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="filter-bar">
+
+        <span class="filter-label">Category</span>
+
+        <a
+            class="filter-pill {% if not active_category %}active{% endif %}"
+            href="{{ url_for('search', query=query or '', pricing=active_pricing or '', sort=active_sort or 'newest') }}"
+        >
+            All
+        </a>
+
+        {% for cat in categories %}
+            <a
+                class="filter-pill {% if active_category == cat %}active{% endif %}"
+                href="{{ url_for('search', query=query or '', category=cat, pricing=active_pricing or '', sort=active_sort or 'newest') }}"
+            >
+                {{ cat }}
+            </a>
+        {% endfor %}
+
+        <span class="filter-divider"></span>
+
+        <span class="filter-label">Price</span>
+
+        <a
+            class="filter-pill pill-free {% if active_pricing == 'Free' %}active{% endif %}"
+            href="{{ url_for('search', query=query or '', category=active_category or '', pricing='Free', sort=active_sort or 'newest') }}"
+        >
+            Free
+        </a>
+
+        <a
+            class="filter-pill pill-paid {% if active_pricing == 'Paid' %}active{% endif %}"
+            href="{{ url_for('search', query=query or '', category=active_category or '', pricing='Paid', sort=active_sort or 'newest') }}"
+        >
+            Paid
+        </a>
+
+        <select
+            class="sort-select"
+            onchange="location.href=this.value"
+            aria-label="Sort results"
+        >
+            <option
+                value="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort='newest') }}"
+                {% if active_sort == 'newest' or not active_sort %}selected{% endif %}
+            >
+                Newest
+            </option>
+
+            <option
+                value="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort='oldest') }}"
+                {% if active_sort == 'oldest' %}selected{% endif %}
+            >
+                Oldest
+            </option>
+
+            <option
+                value="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort='name') }}"
+                {% if active_sort == 'name' %}selected{% endif %}
+            >
+                Name A–Z
+            </option>
+        </select>
+
+    </div>
+
+    <main class="page-body">
+
+        <div class="results-header">
+            <div>
+                <h2>
+                    {% if query %}
+                        Results for <em>“{{ query }}”</em>
+                    {% else %}
+                        Explore all tools
+                    {% endif %}
+                </h2>
+
+                <div class="results-count">
+                    {{ total_results }}
+                    result{{ 's' if total_results != 1 else '' }}
+
+                    {% if active_category %}
+                        · {{ active_category }}
+                    {% endif %}
+
+                    {% if active_pricing %}
+                        · {{ active_pricing }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="view-toggle">
+                <button
+                    id="btn-grid"
+                    class="view-btn active"
+                    onclick="setView('grid')"
+                >
+                    ▦
+                </button>
+
+                <button
+                    id="btn-list"
+                    class="view-btn"
+                    onclick="setView('list')"
+                >
+                    ☰
+                </button>
+            </div>
+        </div>
+
+        {% if results %}
+
+            <div id="results-grid" class="results-grid">
+
+                {% for tool in results %}
+                    <article class="result-card">
+
+                        <div class="result-card-top">
+
+                            <div
+                                class="result-icon"
+                                style="background: {{ tool.icon_bg }};"
+                            >
+                                <img
+                                    src="{{ url_for('static', filename='logos/' + tool.logo) }}"
+                                    alt="{{ tool.name }} logo"
+                                >
+                            </div>
+
+                            <div class="result-info">
+                                <h3>
+                                    {{ tool.name }}
+
+                                    {% if tool.pricing == 'Free' %}
+                                        <span class="badge badge-free">
+                                            Free
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-paid">
+                                            {{ tool.pricing }}
+                                        </span>
+                                    {% endif %}
+                                </h3>
+
+                                <span class="result-url">
+                                    {{ tool.url }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="result-body">
+
+                            <p class="result-desc">
+                                {{ tool.description }}
+                            </p>
+
+                            <div class="tags-strip">
+                                {% for t in (tool.tags or '').split(',')[:4] %}
+                                    {% if t.strip() %}
+                                        <span class="chip">
+                                            {{ t.strip() }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="result-footer">
+                                <span class="tag tag-default">
+                                    {{ tool.category }}
+                                </span>
+
+                                <a
+                                    href="{{ tool.url }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="btn-visit"
+                                >
+                                    Visit tool ↗
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </article>
+                {% endfor %}
+
+            </div>
+
+            {% if total_pages > 1 %}
+                <div class="pagination">
+
+                    <a
+                        href="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort=active_sort or 'newest', page=current_page-1) }}"
+                        class="page-btn {% if current_page <= 1 %}disabled{% endif %}"
+                    >
+                        ‹ Prev
+                    </a>
+
+                    {% for p in range(1, total_pages + 1) %}
+
+                        {% if p == current_page %}
+                            <span class="page-btn active">{{ p }}</span>
+
+                        {% elif p == 1 or p == total_pages or
+                              (p >= current_page-2 and p <= current_page+2) %}
+
+                            <a
+                                href="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort=active_sort or 'newest', page=p) }}"
+                                class="page-btn"
+                            >
+                                {{ p }}
+                            </a>
+
+                        {% elif p == current_page-3 or p == current_page+3 %}
+                            <span class="page-ellipsis">…</span>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    <a
+                        href="{{ url_for('search', query=query or '', category=active_category or '', pricing=active_pricing or '', sort=active_sort or 'newest', page=current_page+1) }}"
+                        class="page-btn {% if current_page >= total_pages %}disabled{% endif %}"
+                    >
+                        Next ›
+                    </a>
+
+                </div>
+            {% endif %}
+
+        {% else %}
+
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+
+                <h3>
+                    No tools found
+                    {% if query %} for “{{ query }}”{% endif %}
+                </h3>
+
+                <p>
+                    Try different keywords, remove a filter,
+                    or browse the complete catalog.
+                </p>
+
+                <a href="{{ url_for('search') }}" class="btn-clear">
+                    Clear all filters
+                </a>
+            </div>
+
+        {% endif %}
+
+        <div class="tips-box">
+            <h4>💡 Quick searches</h4>
+
+            <ul>
+                {% set tips = [
+                    ('coding', '💻 Coding'),
+                    ('writing', '✍️ Writing'),
+                    ('image', '🖼 Image Gen'),
+                    ('video', '🎬 Video'),
+                    ('audio', '🎵 Audio'),
+                    ('research', '🔍 Research'),
+                    ('design', '🎨 Design'),
+                    ('presentation', '📊 Presentations')
+                ] %}
+
+                {% for q, label in tips %}
+                    <li>
+                        <a href="{{ url_for('search', query=q) }}">
+                            {{ label }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </main>
+
+    <footer>
+        <a href="{{ url_for('index') }}" class="logo">
+             <div class="logo-icon"><img src="{{ url_for('static', filename='css/logo.png') }}" class="new-logo"></div>
+            <span>AI</span>&nbsp;Tool Finder
+        </a>
+
+        
+
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('category') }}">Categories</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        function setView(mode) {
+            const grid = document.getElementById('results-grid');
+            const gridButton = document.getElementById('btn-grid');
+            const listButton = document.getElementById('btn-list');
+
+            if (!grid) {
+                return;
+            }
+
+            if (mode === 'list') {
+                grid.classList.add('list-view');
+                listButton.classList.add('active');
+                gridButton.classList.remove('active');
+
+                localStorage.setItem('aiSearchView', 'list');
+            } else {
+                grid.classList.remove('list-view');
+                gridButton.classList.add('active');
+                listButton.classList.remove('active');
+
+                localStorage.setItem('aiSearchView', 'grid');
+            }
+        }
+
+        if (localStorage.getItem('aiSearchView') === 'list') {
+            setView('list');
+        }
+    </script>
+
+</body>
+</html>

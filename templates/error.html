@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ code }} | AI Tool Finder</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #080d19;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .background-glow {
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            background: #2563eb;
+            filter: blur(160px);
+            opacity: 0.20;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .error-card {
+            position: relative;
+            width: 100%;
+            max-width: 620px;
+            text-align: center;
+            padding: 48px 30px;
+            border: 1px solid #26354d;
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.88);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.7px;
+            margin-bottom: 42px;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .error-code {
+            color: #60a5fa;
+            font-size: clamp(58px, 12vw, 88px);
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -5px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: clamp(24px, 5vw, 32px);
+            margin-bottom: 14px;
+            letter-spacing: -0.8px;
+        }
+
+        .message {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 410px;
+            margin: 0 auto 30px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 13px 21px;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .secondary {
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+
+        .secondary:hover {
+            background: #1e293b;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 22px;
+            border-top: 1px solid #26354d;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .error-card {
+                padding: 32px 20px;
+            }
+
+            .logo {
+                margin-bottom: 34px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <main class="error-card">
+        <div class="logo">AI <span>Tool Finder</span></div>
+
+        <div class="icon">
+            {% if code == 404 %}
+            {% else %}
+                ⚙️
+            {% endif %}
+        </div>
+
+        <div class="error-code">{{ code }}</div>
+
+        <h1>{{ title }}</h1>
+
+        <p class="message">{{ message }}</p>
+
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="btn primary">
+                ← Back to Home
+            </a>
+
+            <a href="javascript:location.reload()"
+               class="btn secondary">
+                Try Again ↻
+            </a>
+        </div>
+
+        <div class="footer">
+            AI Tool Finder · Discover tools. Work smarter.
+        </div>
+    </main>
+</body>
+</html>

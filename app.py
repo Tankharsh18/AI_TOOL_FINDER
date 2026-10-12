@@ -222,7 +222,7 @@ def search():
     active_sort     = request.args.get("sort",     "newest").strip()
     try:
         current_page = max(1, int(request.args.get("page", 1)))
-    except (TypeError, ValueError):
+    except (TypeError, ValueError): 
         current_page = 1
 
     conditions, params = [], []
@@ -285,6 +285,29 @@ def search():
         total_results   = total_results,
         all_categories  = all_categories,
     )
+
+# Error page handling
+
+from flask import render_template
+
+# Page not found
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("error.html",
+                           code=404,
+                           title="Page Not Found",
+                           message="Oops! The page you're looking for doesn't exist."), 404
+
+
+# Internal server error
+@app.errorhandler(500)
+def internal_server_error(error):
+    app.logger.error("Internal server error: %s", error)
+    return render_template("error.html",
+                           code=500,
+                           title="Something Went Wrong",
+                           message="We're sorry! Something went wrong on our side."), 500
+
 
 # Cache-control — prevent back after logout
 @app.after_request
